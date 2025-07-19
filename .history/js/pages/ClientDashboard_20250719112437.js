@@ -1,19 +1,16 @@
-const { useNavigate, Link } = ReactRouterDOM;
-
 const ClientDashboard = () => {
-  const navigate = useNavigate();
   const [clients, setClients] = React.useState([]);
   const [error, setError] = React.useState('');
 
   React.useEffect(() => {
     if (!isAuthenticated()) {
-      navigate('/login');
+      window.location.hash = '#/login';
       return;
     }
     api.getClients()
       .then((response) => setClients(response.data))
       .catch((err) => setError(err.response?.data?.error || 'Failed to fetch clients'));
-  }, [navigate]);
+  }, []);
 
   const handleDelete = async (id) => {
     if (confirm('Are you sure you want to delete this client?')) {
@@ -36,22 +33,22 @@ const ClientDashboard = () => {
             <h2 className="text-lg font-semibold">{client.name}</h2>
             <p>{client.email}</p>
             <div className="mt-2 space-x-2">
-              <Link
-                to={`/clients/${client._id}`}
+              <a
+                href={`/clients/${client._id}`}
                 className="text-blue-600 hover:underline"
                 aria-label={`View profile of ${client.name}`}
               >
                 View
-              </Link>
+              </a>
               {getUserRole() === 'admin' && (
                 <>
-                  <Link
-                    to={`/edit-client/${client._id}`}
+                  <a
+                    href={`/edit-client/${client._id}`}
                     className="text-green-600 hover:underline"
                     aria-label={`Edit ${client.name}`}
                   >
                     Edit
-                  </Link>
+                  </a>
                   <button
                     onClick={() => handleDelete(client._id)}
                     className="text-red-600 hover:underline"

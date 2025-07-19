@@ -1,27 +1,25 @@
-const { useParams, useNavigate } = ReactRouterDOM;
-
 const ClientProfile = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
   const [client, setClient] = React.useState(null);
   const [projects, setProjects] = React.useState([]);
   const [error, setError] = React.useState('');
+  const hash = window.location.hash || '#/';
+  const clientId = hash.split('/').pop();
 
   React.useEffect(() => {
     if (!isAuthenticated()) {
-      navigate('/login');
+      window.location.hash = '#/login';
       return;
     }
     api.getClients()
       .then((response) => {
-        const foundClient = response.data.find((c) => c._id === id);
+        const foundClient = response.data.find((c) => c._id === clientId);
         setClient(foundClient || {});
       })
       .catch(() => setError('Failed to fetch client'));
-    api.getProjectsByClient(id)
+    api.getProjectsByClient(clientId)
       .then((response) => setProjects(response.data))
       .catch(() => setError('Failed to fetch projects'));
-  }, [id, navigate]);
+  }, [clientId]);
 
   return (
     <div className="container py-8">

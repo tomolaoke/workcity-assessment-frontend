@@ -1,7 +1,4 @@
-const { useNavigate } = ReactRouterDOM;
-
 const Login = () => {
-  const navigate = useNavigate();
   const [formData, setFormData] = React.useState({ email: '', password: '' });
   const [error, setError] = React.useState('');
 
@@ -14,7 +11,7 @@ const Login = () => {
     try {
       const response = await api.login(formData.email, formData.password);
       setToken(response.data.token);
-      navigate('/clients');
+      window.location.hash = '#/clients';
     } catch (err) {
       setError(err.response?.data?.error || 'Login failed');
     }

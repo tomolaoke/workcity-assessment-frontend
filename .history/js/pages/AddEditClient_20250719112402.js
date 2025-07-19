@@ -1,44 +1,40 @@
-const { useParams, useNavigate } = ReactRouterDOM;
-
 const AddEditClient = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
   const [client, setClient] = React.useState(null);
+  const hash = window.location.hash || '#/';
+  const clientId = hash.split('/').pop();
 
   React.useEffect(() => {
     if (!isAuthenticated()) {
-      navigate('/login');
+      window.location.hash = '#/login';
       return;
     }
     if (getUserRole() !== 'admin') {
-      navigate('/clients');
+      window.location.hash = '#/clients';
       return;
     }
-    if (id) {
+    if (clientId !== 'add-client') {
       api.getClients()
         .then((response) => {
-          const foundClient = response.data.find((c) => c._id === id);
+          const foundClient = response.data.find((c) => c._id === clientId);
           setClient(foundClient || {});
         })
         .catch(() => setClient({}));
-    } else {
-      setClient({});
     }
-  }, [id, navigate]);
+  }, [clientId]);
 
   const handleSubmit = async (formData) => {
-    if (id) {
-      await api.updateClient(id, formData);
-    } else {
+    if (clientId === 'add-client') {
       await api.createClient(formData);
+    } else {
+      await api.updateClient(clientId, formData);
     }
-    navigate('/clients');
+    window.location.hash = '#/clients';
   };
 
   return (
     <div className="container py-8">
       <h1 className="text-2xl font-bold mb-4">
-        {id ? 'Edit Client' : 'Add Client'}
+        {clientId === 'add-client' ? 'Add Client' : 'Edit Client'}
       </h1>
       {client && <ClientForm client={client} onSubmit={handleSubmit} />}
     </div>
